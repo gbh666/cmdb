@@ -75,7 +75,15 @@ def server(request):
 def test(request):
     return HttpResponse("正常用户")
 
-
+def tran(request):
+    from django.db import transaction
+    try:
+        with transaction.atomic():
+            models.UserProfile.objects.create(name='a1',email='asa',phone='xxx',mobile='xxxx')
+            models.Server.objects.create(hostname='uuuu',sn='ASHDJAKSHDKA33')
+    except Exception as e:
+        return HttpResponse('出现错误')
+    return HttpResponse('执行成功')
 
 
 

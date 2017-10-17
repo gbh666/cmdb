@@ -26,14 +26,21 @@ class Server(object):
         temp.pop('hostname')
         record_list = []
 
-        for k, new_val in temp.items():
-            old_val = getattr(self.server_obj, k)
-            if old_val != new_val:
-                record = "[%s]的[%s]由[%s]变更为[%s]" % (self.server_obj.hostname, k, old_val, new_val)
-                record_list.append(record)
-                setattr(old_val, k, new_val)
-        self.server_obj.latest_date = datetime.now()
+        #导入模块
+        from django.db import transaction
+        try:
+            # 可回滚
+            with transaction.atomic():
+                for k, new_val in temp.items():
+                    old_val = getattr(self.server_obj, k)
+                    if old_val != new_val:
+                        record = "[%s]的[%s]由[%s]变更为[%s]" % (self.server_obj.hostname, k, old_val, new_val)
+                        record_list.append(record)
+                        setattr(old_val, k, new_val)
+                self.server_obj.latest_date = datetime.now()
 
-        self.server_obj.save()
-        if record_list:
-            models.ServerRecord.objects.create(server_obj=self.server_obj, content=';'.join(record_list))
+                self.server_obj.save()
+                if record_list:
+                    models.ServerRecord.objects.create(server_obj=self.server_obj, content=';'.join(record_list))
+        except Exception as e:
+            pass

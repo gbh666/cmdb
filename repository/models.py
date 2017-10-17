@@ -1,15 +1,14 @@
 
-
 from django.db import models
 
 class UserProfile(models.Model):
     """
-    用户信息
+    用户信息,运维管理员和业务负责人 50人
     """
-    name = models.CharField(u'姓名', max_length=32)
-    email = models.EmailField(u'邮箱')
-    phone = models.CharField(u'座机', max_length=32)
-    mobile = models.CharField(u'手机', max_length=32)
+    name = models.CharField('姓名', max_length=32)
+    email = models.EmailField('邮箱')
+    phone = models.CharField('座机', max_length=32)
+    mobile = models.CharField('手机', max_length=32)
 
     class Meta:
         verbose_name_plural = "用户表"
@@ -17,6 +16,76 @@ class UserProfile(models.Model):
     def __str__(self):
         return self.name
 
+class AdminInfo(models.Model):
+    """
+    用户登录： 可以登录10人
+    """
+    user = models.OneToOneField("UserProfile")
+    username = models.CharField('用户名', max_length=32)
+    password = models.CharField('密码', max_length=32)
+
+class UserGroup(models.Model):
+    """
+    用户组
+    ID   名称
+     1   组A
+     2   组B
+     3   组C
+    用户组和用户关系表
+    组ID    用户ID
+     1       1
+     1       2
+     2       2
+     2       3
+     3       4
+    """
+    name = models.CharField(max_length=32, unique=True)
+    users = models.ManyToManyField('UserProfile')
+
+    class Meta:
+        verbose_name_plural = "用户组表"
+
+    def __str__(self):
+        return self.name
+
+class BusinessUnit(models.Model):
+    """
+    业务线(部门)
+    """
+    name = models.CharField('业务线', max_length=64, unique=True)  # 销售，1,2
+    contact = models.ForeignKey(UserGroup, related_name='c')  # 业务线联系人：1
+    manager = models.ForeignKey(UserGroup, related_name='m')  # 运维管理人员：2
+
+    class Meta:
+        verbose_name_plural = "业务线表"
+
+    def __str__(self):
+        return self.name
+
+class Tag(models.Model):
+    """
+    资产标签
+    """
+    name = models.CharField('标签', max_length=32, unique=True)
+
+    class Meta:
+        verbose_name_plural = "标签表"
+
+    def __str__(self):
+        return self.name
+
+class IDC(models.Model):
+    """
+    机房信息
+    """
+    name = models.CharField('机房', max_length=32)
+    floor = models.IntegerField('楼层', default=1)
+
+    class Meta:
+        verbose_name_plural = "机房表"
+
+    def __str__(self):
+        return self.name
 
 # class Asset(models.Model):
 #     """
@@ -73,6 +142,15 @@ class Server(models.Model):
     服务器信息
     """
     # asset = models.OneToOneField('Asset')
+
+    idc = models.ForeignKey(IDC,null=True,blank=True)
+    cabinet_num = models.CharField('机柜号',max_length=30,null=True,blank=True)
+    cabinet_order = models.CharField('机柜中序号',max_length=30,null=True,blank=True)
+
+    business_unit = models.ForeignKey(BusinessUnit,null=True,blank=True)
+
+    tags = models.ManyToManyField(Tag)
+
     server_status_choices = (
         (1, '上架'),
         (2, '在线'),
@@ -106,7 +184,6 @@ class Server(models.Model):
     def __str__(self):
         return self.hostname
 
-
 class Disk(models.Model):
     """
     硬盘信息
@@ -122,7 +199,6 @@ class Disk(models.Model):
 
     def __str__(self):
         return self.slot
-
 
 class NIC(models.Model):
     """
@@ -141,8 +217,6 @@ class NIC(models.Model):
 
     def __str__(self):
         return self.name
-
-
 
 class Memory(models.Model):
     """
@@ -179,7 +253,6 @@ class ServerRecord(models.Model):
 
     def __str__(self):
         return self.server_obj.hostname
-
 
 class ErrorLog(models.Model):
     """

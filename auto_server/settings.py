@@ -122,6 +122,14 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+
+
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR,'static'),
+)
+
+
+
 PLUGIN_ITEMS = {
     "nic": "api.plugins.nic.Nic",
     "disk": "api.plugins.disk.Disk",

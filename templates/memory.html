@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="x-ua-compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Title</title>
+    <link rel="stylesheet" href="/static/plugins/bootstrap/css/bootstrap.css">
+    <style>
+        .loading{
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: white;
+            opacity: 0.4;
+            z-index: 1000;
+        }
+        .loading .img{
+            height: 32px;
+            width: 32px;
+            background: url("/static/img/loading.gif");
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            margin-top: -16px;
+            margin-left: -16px;
+            z-index: 1001;
+        }
+    </style>
+</head>
+<body>
+<div id="loading" class="loading hide">
+    <div class="img"></div>
+</div>
+<div class="container">
+    <h1>内存列表</h1>
+    <table class="table table-bordered">
+        <thead id="tHead">
+            <tr>
+
+            </tr>
+        </thead>
+        <tbody id="tBody">
+
+        </tbody>
+
+    </table>
+
+</div>
+
+<script src="/static/js/jquery-3.2.1.js"></script>
+<script src="/static/js/nb-list.js"></script>
+<script>
+    // 调用jquery扩展的函数
+    $(function () {
+        $.nBList("memory_json.html");
+    })
+
+</script>
+
+
+</body>
+</html>
